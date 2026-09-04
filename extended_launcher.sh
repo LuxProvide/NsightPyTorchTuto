@@ -7,9 +7,7 @@
 #SBATCH --partition=gpu
 #SBATCH --time=04:00:00
 #SBATCH --hint=nomultithread
-#SBATCH --account=lxp
-#SBATCH --qos=dev
-#SBATCH --reservation=gpudev
+#SBATCH --qos=default
 
 set -euo pipefail
 
