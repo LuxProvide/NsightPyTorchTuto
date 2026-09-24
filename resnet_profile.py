@@ -2,6 +2,7 @@ import argparse
 import os
 from contextlib import contextmanager
 
+import time
 import torch
 import torch.cuda.profiler as cuda_profiler
 import torch.distributed as dist
@@ -130,6 +131,7 @@ def main(args):
             lr=0.001,
             momentum=0.9,
         )
+
         # Warmup is not recorded by Nsight Systems.
         for epoch in range(args.warmup_epochs):
             if rank == 0:
@@ -148,9 +150,10 @@ def main(args):
 
         if rank == 0:
             print("Starting Nsight Systems capture", flush=True)
-
         cuda_profiler.start()
 
+
+        start = time.perf_counter()
         with nvtx_range("profiled_training"):
             for epoch in range(
                 args.warmup_epochs,
@@ -167,10 +170,14 @@ def main(args):
         # Make sure all CUDA work is complete before ending capture.
         dist.barrier()
         torch.cuda.synchronize(device)
+        end = time.perf_counter()
         cuda_profiler.stop()
-
         if rank == 0:
-            print("Nsight Systems capture completed", flush=True)
+            print(
+                f"Training loop time: {end - start:.3f} s",
+                flush=True,
+            )
+
 
     finally:
         dist.destroy_process_group()
