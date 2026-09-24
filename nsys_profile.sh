@@ -13,12 +13,7 @@
 
 set -euo pipefail
 
-module purge
-module load env/staging/2023.1
-module load PyTorch/2.1.2-foss-2023a-CUDA-12.1.1
-module load torchvision/
-module load Nsight-Systems/2023.2.1
-module load zlib/1.2.13
+module load Nsight-Systems PyTorch torchvision zlib
 
 export NCCL_SOCKET_IFNAME=ib0
 export NCCL_ASYNC_ERROR_HANDLING=1
